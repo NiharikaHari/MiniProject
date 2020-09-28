@@ -3,15 +3,21 @@ package com.flipkart.base;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Properties;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -48,15 +54,16 @@ public class BaseUI {
 			if (prop.getProperty(browserNameKey).equalsIgnoreCase("chrome")) {
 				driver = DriverSetup.getChromeDriver();
 				reportPass("Driver successfully created for chrome");
-			} else if (prop.getProperty(browserNameKey).equalsIgnoreCase("firefox")) {
+			} else if (prop.getProperty(browserNameKey).equalsIgnoreCase(
+					"firefox")) {
 				driver = DriverSetup.getFirefoxDriver();
 				reportPass("Driver successfully created for firefox");
 			} else {
 				reportFail("Invalid browser name key: " + browserNameKey);
 			}
 		} catch (Exception e) {
-			reportFail(e.getMessage());
 			e.printStackTrace();
+			reportFail(e.getMessage());
 		}
 
 		return driver;
@@ -68,22 +75,43 @@ public class BaseUI {
 			driver.get(prop.getProperty(websiteURLKey));
 			reportPass("URL successfully opened : " + websiteURLKey);
 		} catch (Exception e) {
+			e.printStackTrace();
 			reportFail(e.getMessage());
-			e.printStackTrace();
 		}
 
 	}
 
-	/************** TImeout using Thread.sleep() ****************/
-	public static void timeOut(int miliseconds) {
+	/************** Get text of element using locator key ****************/
+	public static String getText(WebDriver driver, String locatorKey) {
+		By locator = getLocator(driver, locatorKey);
+		String text = null;
 		try {
-			Thread.sleep(miliseconds);
-		} catch (InterruptedException e) {
+			WebElement element = fluentWait(driver, locator, 10);
+			text = element.getText();
+			reportPass("Element successfully found: " + locatorKey);
+		} catch (Exception e) {
 			e.printStackTrace();
+			reportFail(e.getMessage());
 		}
+		return text;
 	}
 
-	/************** Wait for document to be in reaedy state ****************/
+	/************** Click on element using locator key ****************/
+	public static void clickOn(WebDriver driver, String locatorKey) {
+		By locator = getLocator(driver, locatorKey);
+		try {
+
+			new WebDriverWait(driver, 20).until(ExpectedConditions
+					.elementToBeClickable(locator));
+		} catch (Exception e) {
+			e.printStackTrace();
+			reportFail(e.getMessage());
+		}
+		reportPass("Element successfully clicked: " + locatorKey);
+		driver.findElement(locator).click();
+	}
+
+	/************** Wait for document to be in ready state ****************/
 	public static void waitForDocumentReady(WebDriver driver, int timeout) {
 		new WebDriverWait(driver, timeout)
 				.until(webDriver -> ((JavascriptExecutor) webDriver)
@@ -91,35 +119,21 @@ public class BaseUI {
 								"complete"));
 	}
 
-	/************** Get text of element using locator key ****************/
-	public static String getText(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
-		try {
-			new WebDriverWait(driver, 20).until(ExpectedConditions
-					.presenceOfElementLocated(locator));
-		} catch (Exception e) {
-			reportFail(e.getMessage());
-			e.printStackTrace();
-		}
-		reportPass("Element successfully found: " + locatorKey);
-		return driver.findElement(locator).getText();
+	/************** Fluent wait for NoSuchElementFound Exception **************/
+	public static WebElement fluentWait(WebDriver driver, By locator,
+			int timeout) {
+		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+				.withTimeout(Duration.ofSeconds(10))
+				.pollingEvery(Duration.ofMillis(500))
+				.ignoring(NoSuchElementException.class);
+		return wait.until(new Function<WebDriver, WebElement>() {
+			public WebElement apply(WebDriver driver) {
+				return driver.findElement(locator);
+			}
+		});
 	}
 
-	/************** Click on element using locator key ****************/
-	public static void clickOn(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
-		try {
-			new WebDriverWait(driver, 20).until(ExpectedConditions
-					.elementToBeClickable(locator));
-		} catch (Exception e) {
-			reportFail(e.getMessage());
-			e.printStackTrace();
-		}
-		reportPass("Element successfully clicked: " + locatorKey);
-		driver.findElement(locator).click();
-	}
-
-	/************** Get By locator using locator key ****************/
+	/**************** Get By locator using locator key ****************/
 	public static By getLocator(WebDriver driver, String locatorKey) {
 		if (locatorKey.endsWith("_id")) {
 			logger.log(Status.INFO, "Locator key is valid: " + locatorKey);
@@ -182,7 +196,7 @@ public class BaseUI {
 	public static void reportFail(String reportMessage) {
 		logger.log(Status.FAIL, reportMessage);
 		takeScreenShotOnFailure();
-		Assert.fail(reportMessage);
+		Assert.fail("Test case failed: " + reportMessage);
 	}
 
 }

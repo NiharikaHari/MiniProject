@@ -33,13 +33,14 @@ public class AddItemsToCartTest extends BaseUI{
 		driver.switchTo().window(tabs.get(1));
 		
 		//Get item name
+		waitForDocumentReady(driver, 20);
 		String itemName = getText(driver, "itemName_xpath");
 
 		//Click on Add to Cart button
-		waitForDocumentReady(driver, 20);
 		clickOn(driver, "addToCartBtn_xpath");
 		
 		//Print cart value to console
+		waitForDocumentReady(driver, 20);
 		String cartValue = getText(driver, "cartAmount_xpath").substring(1);
 		System.out.println(" Cart total is:" + cartValue);
 		

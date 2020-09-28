@@ -44,6 +44,9 @@ public class WriteExcelFile {
 				Cell cell = row.createCell(columnCount++);
 				cell.setCellValue((String) value);
 			}
+			
+			sheet.autoSizeColumn(0);
+			
 			if(fileExists)
 				inputStream.close();
 
