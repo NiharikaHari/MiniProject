@@ -7,7 +7,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.Status;
-import com.flipkart.Base.BaseUI;
+import com.flipkart.base.BaseUI;
 import com.flipkart.utils.DateUtils;
 import com.flipkart.utils.WriteExcelFile;
 
@@ -39,15 +39,6 @@ public class AddItemsToCartTest extends BaseUI{
 		waitForDocumentReady(driver, 20);
 		clickOn(driver, "addToCartBtn_xpath");
 		
-/*		-------- Cannot add item to cart ------------
-		//Check if item cannot be added
-		if(driver.findElements(By.xpath("//div[@class='JAUzCh']")).size()>0){
-			System.out.println("Item cannot be added to cart");
-		} else{
-			//Print cart value to console
-			System.out.println(" Cart total is:" + getText(driver, "cartAmount_xpath", 20).substring(1));
-		}
-*/
 		//Print cart value to console
 		String cartValue = getText(driver, "cartAmount_xpath").substring(1);
 		System.out.println(" Cart total is:" + cartValue);

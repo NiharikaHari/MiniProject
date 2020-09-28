@@ -1,4 +1,4 @@
-package com.flipkart.Base;
+package com.flipkart.base;
 
 import java.util.concurrent.TimeUnit;
 

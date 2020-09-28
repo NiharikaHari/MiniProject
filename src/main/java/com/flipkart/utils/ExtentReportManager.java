@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-import com.flipkart.Base.BaseUI;
+import com.flipkart.base.BaseUI;
 
 public class ExtentReportManager extends BaseUI {
 
