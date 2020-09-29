@@ -1,4 +1,4 @@
-package com.flipkart.utils;
+package com.amazon.utils;
 
 import java.util.Date;
 

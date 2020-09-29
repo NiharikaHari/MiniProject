@@ -1,4 +1,4 @@
-package com.flipkart.base;
+package com.amazon.base;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,17 +15,18 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import com.amazon.utils.DateUtils;
+import com.amazon.utils.ExtentReportManager;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
-import com.flipkart.utils.DateUtils;
-import com.flipkart.utils.ExtentReportManager;
 
 public class BaseUI {
 
@@ -43,7 +44,7 @@ public class BaseUI {
 			try {
 				FileInputStream file = new FileInputStream(
 						System.getProperty("user.dir")
-								+ "/src/test/resources/objectRepository/projectConfig.properties");
+								+ "/src/test/resources/objectRepository/amazonConfig.properties");
 				prop.load(file);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -96,19 +97,61 @@ public class BaseUI {
 		return text;
 	}
 
-	/************** Click on element using locator key ****************/
+	/************** Click on element using locator key with WebElement ****************/
 	public static void clickOn(WebDriver driver, String locatorKey) {
 		By locator = getLocator(driver, locatorKey);
 		try {
 
-			new WebDriverWait(driver, 20).until(ExpectedConditions
+			new WebDriverWait(driver, 10).until(ExpectedConditions
 					.elementToBeClickable(locator));
 		} catch (Exception e) {
 			e.printStackTrace();
 			reportFail(e.getMessage());
 		}
-		reportPass("Element successfully clicked: " + locatorKey);
 		driver.findElement(locator).click();
+		reportPass("Element successfully clicked: " + locatorKey);
+	}
+	
+	/************** Click on element using locator key with actions ****************/
+	public static void clickAction(WebDriver driver, String locatorKey) {
+		By locator = getLocator(driver, locatorKey);
+		try {
+
+			new WebDriverWait(driver, 10).until(ExpectedConditions
+					.elementToBeClickable(locator));
+		} catch (Exception e) {
+			e.printStackTrace();
+			reportFail(e.getMessage());
+		}
+		Actions action = new Actions(driver);
+		action.moveToElement(driver.findElement(locator)).click().build().perform();
+		reportPass("Element successfully clicked: " + locatorKey);
+	}
+	
+	/************** Send text to an element using locator key ****************/
+	public static void sendText(WebDriver driver, String locatorKey, String textKey) {
+		By locator = getLocator(driver, locatorKey);
+		try {
+			WebElement element = fluentWait(driver, locator, 10);
+			element.sendKeys("");
+			element.sendKeys(prop.getProperty(textKey));
+			reportPass("Element successfully found: " + locatorKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			reportFail(e.getMessage());
+		}
+	}
+	
+	/************** Check if an element is present ****************/
+	public static boolean isElementPresent(WebDriver driver, String locatorKey){
+		By locator = getLocator(driver, locatorKey);
+		try{
+			new WebDriverWait(driver, 5).until(ExpectedConditions
+					.elementToBeClickable(locator));
+			return true;
+		}  catch(Exception e){
+			return false;
+		}
 	}
 
 	/************** Wait for document to be in ready state ****************/
@@ -123,7 +166,7 @@ public class BaseUI {
 	public static WebElement fluentWait(WebDriver driver, By locator,
 			int timeout) {
 		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-				.withTimeout(Duration.ofSeconds(10))
+				.withTimeout(Duration.ofSeconds(timeout))
 				.pollingEvery(Duration.ofMillis(500))
 				.ignoring(NoSuchElementException.class);
 		return wait.until(new Function<WebDriver, WebElement>() {

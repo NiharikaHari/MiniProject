@@ -1,4 +1,4 @@
-package com.flipkart.utils;
+package com.amazon.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,8 +13,8 @@ public class WriteExcelFile {
 
 	public static void writeToExcel(String excelFileName, Object[] data) {
 		
-		String excelFilePath = "test-output/"+excelFileName;
-
+		String excelFilePath="output/"+excelFileName;
+		
 		try {
 
 			File excelFile = new File(excelFilePath);
@@ -32,8 +32,11 @@ public class WriteExcelFile {
 				fileExists = true;
 			} else{
 				workbook = new XSSFWorkbook();
-				sheet = workbook.createSheet("CartValueSheet");
-				rowNum = 0;
+				sheet = workbook.createSheet("CartAmountSheet");
+				Row row = sheet.createRow(0);
+				row.createCell(0).setCellValue("Product Name");
+				row.createCell(1).setCellValue("Cart Amount");
+				rowNum = 1;
 			}
 
 			Row row = sheet.createRow(rowNum);
@@ -46,6 +49,7 @@ public class WriteExcelFile {
 			}
 			
 			sheet.autoSizeColumn(0);
+			sheet.autoSizeColumn(1);
 			
 			if(fileExists)
 				inputStream.close();
