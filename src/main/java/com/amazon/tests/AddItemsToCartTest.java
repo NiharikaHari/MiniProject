@@ -1,6 +1,7 @@
 package com.amazon.tests;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -40,11 +41,11 @@ public class AddItemsToCartTest extends BaseUI {
 		// Wait for page to load
 		waitForDocumentReady(driver, 20);
 
-		// Click on "Home Appliances" button
-		clickOn(driver, "homeAppliancesBtn_xpath");
-
+		// Click on "Kitchen and Home Appliances" tab
+		moveTo(driver, "homeAppliancesTab_xpath");
+		
 		// Click on "All Home Appliances" link
-		clickOn(driver, "allHomeAppliances_linkText");
+		clickOn(driver, "homeAppliances_linkText");
 
 		for (int i = 1; i <= 3; ++i) {
 
@@ -70,7 +71,8 @@ public class AddItemsToCartTest extends BaseUI {
 			String cartAmount = getText(driver, "cartAmount_xpath");
 
 			// Write to excel file
-			WriteExcelFile.writeToExcel("TestOutput_" + timeStamp + ".xlsx",
+			System.out.println("\nItem name: "+itemName+"\nCart Amount: "+cartAmount);
+			WriteExcelFile.writeToExcel("output/TestOutput_" + timeStamp + ".xlsx",
 					new Object[] { itemName, cartAmount });
 
 			// Go back 3 times to home appliances page

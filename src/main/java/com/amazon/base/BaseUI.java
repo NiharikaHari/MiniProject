@@ -111,8 +111,8 @@ public class BaseUI {
 		driver.findElement(locator).click();
 		reportPass("Element successfully clicked: " + locatorKey);
 	}
-	
-	/************** Click on element using locator key with actions ****************/
+
+	/************** Click on element using locator key with Actions ****************/
 	public static void clickAction(WebDriver driver, String locatorKey) {
 		By locator = getLocator(driver, locatorKey);
 		try {
@@ -124,12 +124,14 @@ public class BaseUI {
 			reportFail(e.getMessage());
 		}
 		Actions action = new Actions(driver);
-		action.moveToElement(driver.findElement(locator)).click().build().perform();
+		action.moveToElement(driver.findElement(locator)).click().build()
+				.perform();
 		reportPass("Element successfully clicked: " + locatorKey);
 	}
-	
+
 	/************** Send text to an element using locator key ****************/
-	public static void sendText(WebDriver driver, String locatorKey, String textKey) {
+	public static void sendText(WebDriver driver, String locatorKey,
+			String textKey) {
 		By locator = getLocator(driver, locatorKey);
 		try {
 			WebElement element = fluentWait(driver, locator, 10);
@@ -142,14 +144,27 @@ public class BaseUI {
 		}
 	}
 	
-	/************** Check if an element is present ****************/
-	public static boolean isElementPresent(WebDriver driver, String locatorKey){
+	/************** Move to an element using locator key with Actions ****************/
+	public static void moveTo(WebDriver driver, String locatorKey) {
 		By locator = getLocator(driver, locatorKey);
-		try{
+		try {
+			Actions action = new Actions(driver);
+			action.moveToElement(driver.findElement(locator)).build().perform();
+			reportPass("Moved to element: " + locatorKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			reportFail(e.getMessage());
+		}
+	}
+
+	/************** Check if an element is present ****************/
+	public static boolean isElementPresent(WebDriver driver, String locatorKey) {
+		By locator = getLocator(driver, locatorKey);
+		try {
 			new WebDriverWait(driver, 5).until(ExpectedConditions
 					.elementToBeClickable(locator));
 			return true;
-		}  catch(Exception e){
+		} catch (Exception e) {
 			return false;
 		}
 	}
@@ -218,8 +233,8 @@ public class BaseUI {
 	public static void takeScreenShotOnFailure() {
 		TakesScreenshot takeScreenShot = (TakesScreenshot) driver;
 		File srcFile = takeScreenShot.getScreenshotAs(OutputType.FILE);
-		String imagePath = System.getProperty("user.dir") + "/screenshots/"
-				+ DateUtils.getTimeStamp() + ".png";
+		String imagePath = System.getProperty("user.dir")
+				+ "/failure-screenshots/" + DateUtils.getTimeStamp() + ".png";
 		File destFile = new File(imagePath);
 		try {
 			FileUtils.copyFile(srcFile, destFile);

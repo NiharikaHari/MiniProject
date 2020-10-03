@@ -11,9 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class WriteExcelFile {
 
-	public static void writeToExcel(String excelFileName, Object[] data) {
-		
-		String excelFilePath="output/"+excelFileName;
+	public static void writeToExcel(String excelFilePath, Object[] data) {
 		
 		try {
 
@@ -44,20 +42,19 @@ public class WriteExcelFile {
 			int columnCount = 0;
 
 			for (Object value : data) {
-				Cell cell = row.createCell(columnCount++);
+				Cell cell = row.createCell(columnCount);
 				cell.setCellValue((String) value);
+				sheet.autoSizeColumn(columnCount++);
 			}
-			
-			sheet.autoSizeColumn(0);
-			sheet.autoSizeColumn(1);
 			
 			if(fileExists)
 				inputStream.close();
 
-			FileOutputStream outputStream = new FileOutputStream(excelFilePath);
-			workbook.write(outputStream);
+			FileOutputStream writeFile;
+			writeFile = new FileOutputStream(excelFilePath);
+			workbook.write(writeFile);
+			writeFile.close();
 			workbook.close();
-			outputStream.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
