@@ -1,7 +1,6 @@
 package com.amazon.tests;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -30,60 +29,64 @@ public class AddItemsToCartTest extends BaseUI {
 		openBrowser("websiteURL");
 
 		// Click on hamburger icon
-		clickAction(driver, "categoriesMenu_id");
+		clickAction("categoriesMenu_id");
 
 		// Click on "TV, Appliances, Electronics" menu item
-		clickOn(driver, "appliances_linkText");
+		clickOn("appliances_linkText");
 
 		// Click on "Kitchen and home appliances" link
-		clickOn(driver, "kitchenHomeAppliances_linkText");
+		clickOn("kitchenHomeAppliances_linkText");
 
 		// Wait for page to load
-		waitForDocumentReady(driver, 20);
+		waitForDocumentReady();
 
 		// Click on "Kitchen and Home Appliances" tab
-		moveTo(driver, "homeAppliancesTab_xpath");
-		
+		moveTo("homeAppliancesTab_xpath");
+
 		// Click on "All Home Appliances" link
-		clickOn(driver, "homeAppliances_linkText");
+		clickOn("homeAppliances_linkText");
 
 		for (int i = 1; i <= 3; ++i) {
 
 			// Click on item
-			clickOn(driver, "item" + i + "_xpath");
-
-			// Get product title
-			String itemName = getText(driver, "title_id");
+			clickOn("item" + i + "_xpath");
 
 			// Click on add to cart button
-			clickOn(driver, "addToCartBtn_id");
+			clickOn("addToCartBtn_id");
 
 			// Click on skip, if extended warranty page opens
-			if (isElementPresent(driver, "warrantyBtn_xpath")) {
-				waitForDocumentReady(driver, 10);
-				clickOn(driver, "warrantyBtn_xpath");
+			if (isElementPresent("warrantyBtn_xpath")) {
+				waitForDocumentReady();
+				clickOn("warrantyBtn_xpath");
 			}
 
-			// Click on go to cart button
-			clickOn(driver, "goToCartBtn_id");
+			if (i > 1) {
+				// Click on go to cart button
+				clickOn("goToCartBtn_id");
 
-			// Get cart amount
-			String cartAmount = getText(driver, "cartAmount_xpath");
+				// Get cart amount
+				String cartAmount = getText("cartAmount_xpath");
 
-			// Write to excel file
-			System.out.println("\nItem name: "+itemName+"\nCart Amount: "+cartAmount);
-			WriteExcelFile.writeToExcel("output/TestOutput_" + timeStamp + ".xlsx",
-					new Object[] { itemName, cartAmount });
+				// Display cart amount and write to output excel file
 
-			// Go back 3 times to home appliances page
+				System.out.println("Cart amount after adding " + i
+						+ " items is: " + cartAmount);
+				WriteExcelFile.writeToExcel(System.getProperty("user.dir")
+						+ "/Output/TestOutput_" + timeStamp + ".xlsx",
+						new Object[] {
+								"Cart amount after adding " + i + " items",
+								cartAmount });
+				driver.navigate().back();
+			}
+
+			// Go back to home appliances page
 			if (i < 3) {
 				driver.navigate().back();
 				driver.navigate().back();
-				driver.navigate().back();
 			}
+
+			logger.log(Status.PASS, "Test executed successfully");
 		}
 
-		logger.log(Status.PASS, "Test executed successfully");
 	}
-
 }

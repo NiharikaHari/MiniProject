@@ -14,7 +14,6 @@ public class WriteExcelFile {
 	public static void writeToExcel(String excelFilePath, Object[] data) {
 		
 		try {
-
 			File excelFile = new File(excelFilePath);
 			XSSFWorkbook workbook;
 			XSSFSheet sheet;
@@ -31,10 +30,7 @@ public class WriteExcelFile {
 			} else{
 				workbook = new XSSFWorkbook();
 				sheet = workbook.createSheet("CartAmountSheet");
-				Row row = sheet.createRow(0);
-				row.createCell(0).setCellValue("Product Name");
-				row.createCell(1).setCellValue("Cart Amount");
-				rowNum = 1;
+				rowNum = 0;
 			}
 
 			Row row = sheet.createRow(rowNum);

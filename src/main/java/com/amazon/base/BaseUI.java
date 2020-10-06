@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
@@ -51,16 +52,16 @@ public class BaseUI {
 			}
 		}
 
+		int choice = getBrowserOption();
 		try {
-			if (prop.getProperty(browserNameKey).equalsIgnoreCase("chrome")) {
+			if (choice == 1) {
 				driver = DriverSetup.getChromeDriver();
-				reportPass("Driver successfully created for chrome");
-			} else if (prop.getProperty(browserNameKey).equalsIgnoreCase(
-					"firefox")) {
-				driver = DriverSetup.getFirefoxDriver();
-				reportPass("Driver successfully created for firefox");
+				logger.log(Status.INFO,
+						"Driver successfully created for chrome");
 			} else {
-				reportFail("Invalid browser name key: " + browserNameKey);
+				driver = DriverSetup.getFirefoxDriver();
+				logger.log(Status.INFO,
+						"Driver successfully created for chrome");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,6 +69,23 @@ public class BaseUI {
 		}
 
 		return driver;
+	}
+
+	/************** Get browser option from user ****************/
+	public static int getBrowserOption() {
+		int choice = 0;
+		System.out
+				.println("Browser options\n1 - Chrome\n2 - Firefox\nEnter choice: ");
+		Scanner sc = new Scanner(System.in);
+		choice = sc.nextInt();
+		while (choice != 1 && choice != 2) {
+			System.out.println("Invalid choice entered.");
+			System.out
+					.println("Browser options\n1 - Chrome\n2 - Firefox\nEnter choice: ");
+			choice = sc.nextInt();
+		}
+		sc.close();
+		return choice;
 	}
 
 	/************** Open website URL ****************/
@@ -83,11 +101,11 @@ public class BaseUI {
 	}
 
 	/************** Get text of element using locator key ****************/
-	public static String getText(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static String getText(String locatorKey) {
+		By locator = getLocator(locatorKey);
 		String text = null;
 		try {
-			WebElement element = fluentWait(driver, locator, 10);
+			WebElement element = fluentWait(locator, 20);
 			text = element.getText();
 			reportPass("Element successfully found: " + locatorKey);
 		} catch (Exception e) {
@@ -98,11 +116,11 @@ public class BaseUI {
 	}
 
 	/************** Click on element using locator key with WebElement ****************/
-	public static void clickOn(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static void clickOn(String locatorKey) {
+		By locator = getLocator(locatorKey);
 		try {
 
-			new WebDriverWait(driver, 10).until(ExpectedConditions
+			new WebDriverWait(driver, 20).until(ExpectedConditions
 					.elementToBeClickable(locator));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -113,28 +131,26 @@ public class BaseUI {
 	}
 
 	/************** Click on element using locator key with Actions ****************/
-	public static void clickAction(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static void clickAction(String locatorKey) {
+		By locator = getLocator(locatorKey);
 		try {
-
-			new WebDriverWait(driver, 10).until(ExpectedConditions
+			new WebDriverWait(driver, 20).until(ExpectedConditions
 					.elementToBeClickable(locator));
+			Actions action = new Actions(driver);
+			action.moveToElement(driver.findElement(locator)).click().build()
+					.perform();
+			reportPass("Element successfully clicked: " + locatorKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			reportFail(e.getMessage());
 		}
-		Actions action = new Actions(driver);
-		action.moveToElement(driver.findElement(locator)).click().build()
-				.perform();
-		reportPass("Element successfully clicked: " + locatorKey);
 	}
 
 	/************** Send text to an element using locator key ****************/
-	public static void sendText(WebDriver driver, String locatorKey,
-			String textKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static void sendText(String locatorKey, String textKey) {
+		By locator = getLocator(locatorKey);
 		try {
-			WebElement element = fluentWait(driver, locator, 10);
+			WebElement element = fluentWait(locator, 10);
 			element.sendKeys("");
 			element.sendKeys(prop.getProperty(textKey));
 			reportPass("Element successfully found: " + locatorKey);
@@ -143,10 +159,10 @@ public class BaseUI {
 			reportFail(e.getMessage());
 		}
 	}
-	
+
 	/************** Move to an element using locator key with Actions ****************/
-	public static void moveTo(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static void moveTo(String locatorKey) {
+		By locator = getLocator(locatorKey);
 		try {
 			Actions action = new Actions(driver);
 			action.moveToElement(driver.findElement(locator)).build().perform();
@@ -158,8 +174,8 @@ public class BaseUI {
 	}
 
 	/************** Check if an element is present ****************/
-	public static boolean isElementPresent(WebDriver driver, String locatorKey) {
-		By locator = getLocator(driver, locatorKey);
+	public static boolean isElementPresent(String locatorKey) {
+		By locator = getLocator(locatorKey);
 		try {
 			new WebDriverWait(driver, 5).until(ExpectedConditions
 					.elementToBeClickable(locator));
@@ -170,16 +186,15 @@ public class BaseUI {
 	}
 
 	/************** Wait for document to be in ready state ****************/
-	public static void waitForDocumentReady(WebDriver driver, int timeout) {
-		new WebDriverWait(driver, timeout)
+	public static void waitForDocumentReady() {
+		new WebDriverWait(driver, 20)
 				.until(webDriver -> ((JavascriptExecutor) webDriver)
 						.executeScript("return document.readyState").equals(
 								"complete"));
 	}
 
 	/************** Fluent wait for NoSuchElementFound Exception **************/
-	public static WebElement fluentWait(WebDriver driver, By locator,
-			int timeout) {
+	public static WebElement fluentWait(By locator, int timeout) {
 		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
 				.withTimeout(Duration.ofSeconds(timeout))
 				.pollingEvery(Duration.ofMillis(500))
@@ -192,7 +207,7 @@ public class BaseUI {
 	}
 
 	/**************** Get By locator using locator key ****************/
-	public static By getLocator(WebDriver driver, String locatorKey) {
+	public static By getLocator(String locatorKey) {
 		if (locatorKey.endsWith("_id")) {
 			logger.log(Status.INFO, "Locator key is valid: " + locatorKey);
 			return By.id(prop.getProperty(locatorKey));
