@@ -67,15 +67,17 @@ public class AddItemsToCartTest extends BaseUI {
 				// Get cart amount
 				String cartAmount = getText("cartAmount_xpath");
 
-				// Display cart amount and write to output excel file
-
+				// Display cart amount
 				System.out.println("Cart amount after adding " + i
 						+ " items is: " + cartAmount);
+
+				// Write cart amount to excel file
 				WriteExcelFile.writeToExcel(System.getProperty("user.dir")
 						+ "/Output/TestOutput_" + timeStamp + ".xlsx",
 						new Object[] {
 								"Cart amount after adding " + i + " items",
 								cartAmount });
+
 				driver.navigate().back();
 			}
 
@@ -84,9 +86,7 @@ public class AddItemsToCartTest extends BaseUI {
 				driver.navigate().back();
 				driver.navigate().back();
 			}
-
-			logger.log(Status.PASS, "Test executed successfully");
 		}
-
+		logger.log(Status.PASS, "Test executed successfully");
 	}
 }

@@ -57,11 +57,15 @@ public class BaseUI {
 			if (choice == 1) {
 				driver = DriverSetup.getChromeDriver();
 				logger.log(Status.INFO,
-						"Driver successfully created for chrome");
+						"Driver successfully created for Chrome");
+			} else if (choice == 2) {
+				driver = DriverSetup.getMSEdgeDriver();
+				logger.log(Status.INFO,
+						"Driver successfully created for MS Edge");
 			} else {
 				driver = DriverSetup.getFirefoxDriver();
 				logger.log(Status.INFO,
-						"Driver successfully created for chrome");
+						"Driver successfully created for FireFox");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -75,13 +79,13 @@ public class BaseUI {
 	public static int getBrowserOption() {
 		int choice = 0;
 		System.out
-				.println("Browser options\n1 - Chrome\n2 - Firefox\nEnter choice: ");
+				.println("Browser options\n1 - Chrome\n2 - MS Edge \n3 - Firefox\nEnter choice: ");
 		Scanner sc = new Scanner(System.in);
 		choice = sc.nextInt();
-		while (choice != 1 && choice != 2) {
+		while (choice != 1 && choice != 2 && choice != 3) {
 			System.out.println("Invalid choice entered.");
 			System.out
-					.println("Browser options\n1 - Chrome\n2 - Firefox\nEnter choice: ");
+					.println("Browser options\n1 - Chrome\n2 - MS Edge \n3 - Firefox\nEnter choice: ");
 			choice = sc.nextInt();
 		}
 		sc.close();
@@ -92,7 +96,8 @@ public class BaseUI {
 	public static void openBrowser(String websiteURLKey) {
 		try {
 			driver.get(prop.getProperty(websiteURLKey));
-			reportPass("URL successfully opened : " + websiteURLKey);
+			logger.log(Status.INFO, "URL successfully opened : "
+					+ websiteURLKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			reportFail(e.getMessage());
@@ -119,15 +124,14 @@ public class BaseUI {
 	public static void clickOn(String locatorKey) {
 		By locator = getLocator(locatorKey);
 		try {
-
 			new WebDriverWait(driver, 20).until(ExpectedConditions
 					.elementToBeClickable(locator));
+			driver.findElement(locator).click();
+			reportPass("Element successfully clicked: " + locatorKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			reportFail(e.getMessage());
 		}
-		driver.findElement(locator).click();
-		reportPass("Element successfully clicked: " + locatorKey);
 	}
 
 	/************** Click on element using locator key with Actions ****************/
@@ -140,20 +144,6 @@ public class BaseUI {
 			action.moveToElement(driver.findElement(locator)).click().build()
 					.perform();
 			reportPass("Element successfully clicked: " + locatorKey);
-		} catch (Exception e) {
-			e.printStackTrace();
-			reportFail(e.getMessage());
-		}
-	}
-
-	/************** Send text to an element using locator key ****************/
-	public static void sendText(String locatorKey, String textKey) {
-		By locator = getLocator(locatorKey);
-		try {
-			WebElement element = fluentWait(locator, 10);
-			element.sendKeys("");
-			element.sendKeys(prop.getProperty(textKey));
-			reportPass("Element successfully found: " + locatorKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			reportFail(e.getMessage());

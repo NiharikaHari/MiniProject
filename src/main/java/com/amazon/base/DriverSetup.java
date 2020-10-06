@@ -6,6 +6,7 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
@@ -34,10 +35,8 @@ public class DriverSetup {
 		driver.manage().window().maximize();
 
 		// Set page load timeout
-		driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 		
-		driver.manage().deleteAllCookies();
-
 		// return driver
 		return driver;
 	}
@@ -62,10 +61,32 @@ public class DriverSetup {
 		driver.manage().window().maximize();
 
 		// Set page load timeout
-		driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+
+		// return driver
+		return driver;
+	}
+	
+	public static WebDriver getMSEdgeDriver() {
+
+		// Set property and create Microsoft Edge driver
+		String userDir = System.getProperty("user.dir");
+		System.setProperty("webdriver.edge.driver", userDir
+				+ "/src/test/resources/drivers/msedgedriver.exe");
+
+		// Create driver
+		driver = new EdgeDriver();
+
+		// To maximize the window
+		driver.manage().window().maximize();
+
+		// Set page load timeout
+		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 
 		// return driver
 		return driver;
 	}
 
+	
+	
 }
