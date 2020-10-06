@@ -40,11 +40,11 @@ public class AddItemsToCartTest extends BaseUI {
 		// Wait for page to load
 		waitForDocumentReady();
 
-		// Click on "Kitchen and Home Appliances" tab
-		moveTo("homeAppliancesTab_xpath");
-
-		// Click on "All Home Appliances" link
-		clickOn("homeAppliances_linkText");
+		//Click on Home Appliances button
+		clickOn("homeAppliancesBtn_xpath");
+		
+		//Click on All Home Appliances
+		clickOn("allHomeAppliances_linkText");
 
 		for (int i = 1; i <= 3; ++i) {
 
@@ -60,6 +60,7 @@ public class AddItemsToCartTest extends BaseUI {
 				clickOn("warrantyBtn_xpath");
 			}
 
+			
 			if (i > 1) {
 				// Click on go to cart button
 				clickOn("goToCartBtn_id");
