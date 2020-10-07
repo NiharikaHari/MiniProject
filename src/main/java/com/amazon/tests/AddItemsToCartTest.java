@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 import com.amazon.base.BaseUI;
 import com.amazon.utils.DateUtils;
-import com.amazon.utils.WriteExcelFile;
+import com.amazon.utils.FileIO;
 import com.aventstack.extentreports.Status;
 
 public class AddItemsToCartTest extends BaseUI {
@@ -25,7 +25,7 @@ public class AddItemsToCartTest extends BaseUI {
 
 		logger = report.createTest("Add Items to Cart Test - Amazon");
 
-		driver = invokeBrowser("browserName");
+		driver = invokeBrowser();
 		openBrowser("websiteURL");
 
 		// Click on hamburger icon
@@ -54,13 +54,12 @@ public class AddItemsToCartTest extends BaseUI {
 			// Click on add to cart button
 			clickOn("addToCartBtn_id");
 
-			// Click on skip, if extended warranty page opens
-			if (isElementPresent("warrantyBtn_xpath")) {
+			// Click on skip or close, if extended warranty page opens
+			if (isElementPresent("warrantySkip_xpath")) {
 				waitForDocumentReady();
-				clickOn("warrantyBtn_xpath");
+				clickAction("warrantySkip_xpath");
 			}
 
-			
 			if (i > 1) {
 				// Click on go to cart button
 				clickOn("goToCartBtn_id");
@@ -73,7 +72,7 @@ public class AddItemsToCartTest extends BaseUI {
 						+ " items is: " + cartAmount);
 
 				// Write cart amount to excel file
-				WriteExcelFile.writeToExcel(System.getProperty("user.dir")
+				FileIO.writeToExcel(System.getProperty("user.dir")
 						+ "/Output/TestOutput_" + timeStamp + ".xlsx",
 						new Object[] {
 								"Cart amount after adding " + i + " items",
