@@ -1,7 +1,6 @@
 package com.amazon.base;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
@@ -25,6 +24,7 @@ import org.testng.Assert;
 
 import com.amazon.utils.DateUtils;
 import com.amazon.utils.ExtentReportManager;
+import com.amazon.utils.FileIO;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
@@ -32,26 +32,13 @@ import com.aventstack.extentreports.Status;
 public class BaseUI {
 
 	public static WebDriver driver;
-	public static Properties prop;
+	public static Properties prop = FileIO.initProperties(); 
 	public static ExtentReports report = ExtentReportManager
 			.getReportInstance();
 	public static ExtentTest logger;
 
 	/************** Invoke Browser ****************/
-	public static WebDriver invokeBrowser(String browserNameKey) {
-
-		if (prop == null) {
-			prop = new Properties();
-			try {
-				FileInputStream file = new FileInputStream(
-						System.getProperty("user.dir")
-								+ "/src/test/resources/objectRepository/amazonConfig.properties");
-				prop.load(file);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
+	public static WebDriver invokeBrowser() {
 		int choice = getBrowserOption();
 		try {
 			if (choice == 1) {

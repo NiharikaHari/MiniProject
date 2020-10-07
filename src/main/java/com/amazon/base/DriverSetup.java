@@ -35,7 +35,7 @@ public class DriverSetup {
 		driver.manage().window().maximize();
 
 		// Set page load timeout
-		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 		
 		// return driver
 		return driver;
@@ -61,7 +61,7 @@ public class DriverSetup {
 		driver.manage().window().maximize();
 
 		// Set page load timeout
-		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
 		// return driver
 		return driver;
@@ -81,7 +81,7 @@ public class DriverSetup {
 		driver.manage().window().maximize();
 
 		// Set page load timeout
-		driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
 
 		// return driver
 		return driver;
